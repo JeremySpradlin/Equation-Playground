@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Equation Playground</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .section {
+            margin: 20px;
+            flex: 1 1 45%;
+            max-width: 600px;
+        }
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        .equation {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #linear-graph, #quadratic-graph {
+            width: 100%;
+            height: 400px;
+        }
+        h1 {
+            text-align: center;
+            width: 100%;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .section {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Equation Playground</h1>
+    <div class="container">
+        <!-- Linear Equation Section -->
+        <div class="section" id="linear-section">
+            <h2>Linear Equation: y = mx + b</h2>
+            <div class="controls">
+                <div class="slider-container">
+                    <label for="slope">Slope (m): <span id="slope-value">1.0</span></label><br>
+                    <input type="range" id="slope" min="-10" max="10" step="0.1" value="1">
+                </div>
+                <div class="slider-container">
+                    <label for="intercept">Y-Intercept (b): <span id="intercept-value">0.0</span></label><br>
+                    <input type="range" id="intercept" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="equation">
+                    Equation: y = <span id="equation-m">1.0</span>x <span id="equation-b">+ 0.0</span>
+                </div>
+            </div>
+            <div id="linear-graph"></div>
+        </div>
+
+        <!-- Quadratic Equation Section -->
+        <div class="section" id="quadratic-section">
+            <h2>Quadratic Equation: y = ax² + bx + c</h2>
+            <div class="controls">
+                <div class="slider-container">
+                    <label for="quad-a">Coefficient a: <span id="quad-a-value">1.0</span></label><br>
+                    <input type="range" id="quad-a" min="-5" max="5" step="0.1" value="1">
+                </div>
+                <div class="slider-container">
+                    <label for="quad-b">Coefficient b: <span id="quad-b-value">0.0</span></label><br>
+                    <input type="range" id="quad-b" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="slider-container">
+                    <label for="quad-c">Coefficient c: <span id="quad-c-value">0.0</span></label><br>
+                    <input type="range" id="quad-c" min="-10" max="10" step="0.1" value="0">
+                </div>
+                <div class="equation">
+                    Equation: y = <span id="equation-a">1.0</span>x² <span id="equation-b-quad">+ 0.0</span>x <span id="equation-c">+ 0.0</span>
+                </div>
+            </div>
+            <div id="quadratic-graph"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Linear Equation Variables
+        var m = parseFloat(document.getElementById('slope').value);
+        var b = parseFloat(document.getElementById('intercept').value);
+
+        // Quadratic Equation Variables
+        var a = parseFloat(document.getElementById('quad-a').value);
+        var b_quad = parseFloat(document.getElementById('quad-b').value);
+        var c = parseFloat(document.getElementById('quad-c').value);
+
+        // Functions to Update Linear Equation
+        function updateLinearEquation() {
+            document.getElementById('slope-value').innerText = m.toFixed(1);
+            document.getElementById('intercept-value').innerText = b.toFixed(1);
+
+            document.getElementById('equation-m').innerText = m.toFixed(1);
+            document.getElementById('equation-b').innerText = b >= 0 ? '+ ' + b.toFixed(1) : '- ' + Math.abs(b).toFixed(1);
+        }
+
+        function plotLinearGraph() {
+            var x_values = [];
+            var y_values = [];
+            for (var x = -10; x <= 10; x += 0.1) {
+                x_values.push(x);
+                y_values.push(m * x + b);
+            }
+            var data = [{
+                x: x_values,
+                y: y_values,
+                mode: 'lines',
+                name: 'y = mx + b',
+                line: {color: 'blue'}
+            }];
+            var layout = {
+                xaxis: {range: [-10, 10], zeroline: true},
+                yaxis: {range: [-10, 10], zeroline: true},
+                title: 'Graph of y = mx + b',
+                plot_bgcolor: "#f0f0f0",
+                paper_bgcolor: "#f0f0f0",
+            };
+            Plotly.newPlot('linear-graph', data, layout, {responsive: true});
+        }
+
+        function updateLinearGraph() {
+            updateLinearEquation();
+            plotLinearGraph();
+        }
+
+        // Functions to Update Quadratic Equation
+        function updateQuadraticEquation() {
+            document.getElementById('quad-a-value').innerText = a.toFixed(1);
+            document.getElementById('quad-b-value').innerText = b_quad.toFixed(1);
+            document.getElementById('quad-c-value').innerText = c.toFixed(1);
+
+            document.getElementById('equation-a').innerText = a.toFixed(1);
+            document.getElementById('equation-b-quad').innerText = b_quad >= 0 ? '+ ' + b_quad.toFixed(1) : '- ' + Math.abs(b_quad).toFixed(1);
+            document.getElementById('equation-c').innerText = c >= 0 ? '+ ' + c.toFixed(1) : '- ' + Math.abs(c).toFixed(1);
+        }
+
+        function plotQuadraticGraph() {
+            var x_values = [];
+            var y_values = [];
+            for (var x = -10; x <= 10; x += 0.1) {
+                x_values.push(x);
+                y_values.push(a * x * x + b_quad * x + c);
+            }
+            var data = [{
+                x: x_values,
+                y: y_values,
+                mode: 'lines',
+                name: 'y = ax² + bx + c',
+                line: {color: 'red'}
+            }];
+            var layout = {
+                xaxis: {range: [-10, 10], zeroline: true},
+                yaxis: {range: [-10, 10], zeroline: true},
+                title: 'Graph of y = ax² + bx + c',
+                plot_bgcolor: "#f0f0f0",
+                paper_bgcolor: "#f0f0f0",
+            };
+            Plotly.newPlot('quadratic-graph', data, layout, {responsive: true});
+        }
+
+        function updateQuadraticGraph() {
+            updateQuadraticEquation();
+            plotQuadraticGraph();
+        }
+
+        // Event Listeners for Linear Equation
+        document.getElementById('slope').addEventListener('input', function() {
+            m = parseFloat(this.value);
+            updateLinearGraph();
+        });
+
+        document.getElementById('intercept').addEventListener('input', function() {
+            b = parseFloat(this.value);
+            updateLinearGraph();
+        });
+
+        // Event Listeners for Quadratic Equation
+        document.getElementById('quad-a').addEventListener('input', function() {
+            a = parseFloat(this.value);
+            updateQuadraticGraph();
+        });
+
+        document.getElementById('quad-b').addEventListener('input', function() {
+            b_quad = parseFloat(this.value);
+            updateQuadraticGraph();
+        });
+
+        document.getElementById('quad-c').addEventListener('input', function() {
+            c = parseFloat(this.value);
+            updateQuadraticGraph();
+        });
+
+        // Initial Plots
+        updateLinearGraph();
+        updateQuadraticGraph();
+    </script>
+</body>
+</html>
